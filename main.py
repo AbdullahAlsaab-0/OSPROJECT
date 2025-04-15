@@ -1,7 +1,6 @@
-from schdulers.FIFO_Scheduler import FIFO_Scheduler
+from schdulers.FCFS_Scheduler import FCFS_Scheduler
 
-fifo = FIFO_Scheduler()
+fifo = FCFS_Scheduler()
 fifo.read_processes()
 print(fifo)
 fifo.run()
-fifo.show_stats()
