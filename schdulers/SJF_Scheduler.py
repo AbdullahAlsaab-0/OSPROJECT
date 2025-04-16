@@ -1,43 +1,49 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import random
+import heapq
 
+import util
 from schdulers.Scheduler import Scheduler
 
 
-class FCFSScheduler(Scheduler):
+class SJFScheduler(Scheduler):
 
     def __init__(self):
         super().__init__()
-
+        self.completed = []
 
     def run(self):
-        self.current_time = 0
+        ready = []
+        i = 0
 
-        for process in self.processes:
-            arrival = process["arrival"]
-            burst = process["burst"]
+        while i < self.num_processes or ready:
+            while i < self.num_processes and self.processes[i]["arrival"] <= self.current_time:
+                heapq.heappush(ready, (self.processes[i]["burst"], self.processes[i]))
+                i += 1
 
-            if arrival > self.current_time:
-                self.current_time = arrival
-
-            waiting_time = self.current_time - arrival
-            turnaround = waiting_time + burst
-
-            process_idx = int(process["id"][1:]) - 1
-
-            self.turnaround_time[process_idx] = turnaround
-            self.waiting_time[process_idx] = waiting_time
-            self.current_time += burst
-
+            if ready:
+                burst, process = heapq.heappop(ready)
+                process_idx = int(process["id"][1:]) - 1
+                waiting_time = self.current_time - process["arrival"]
+                turnaround = waiting_time + burst
+                self.waiting_time[process_idx]= waiting_time
+                self.turnaround_time[process_idx] = turnaround
+                self.current_time += burst
+                self.completed.append(process)
+            else:
+                self.current_time = self.processes[i]["arrival"]
 
         self.show_stats()
 
+
+
     def show_stats(self):
         print(f"\n{'Process':<10}{'Arrival':<10}{'Burst':<10}{'Waiting':<10}{'Turnaround':<10}")
-        for idx, process in enumerate(self.processes):
+        for process in self.completed:
+            process_idx = int(process["id"][1:]) - 1
             print(
-                f"{process["id"]:<10}{process["arrival"]:<10}{process["burst"]:<10}{self.waiting_time[idx]:<10}{self.turnaround_time[idx]:<10}")
+                f"{process["id"]:<10}{process["arrival"]:<10}{process["burst"]:<10}{self.waiting_time[process_idx]:<10}{self.turnaround_time[process_idx]:<10}")
         AWT = sum(self.waiting_time) / len(self.waiting_time)
         ATT = sum(self.turnaround_time) / len(self.turnaround_time)
         print(f"\nAverage Waiting Time: {AWT:.2f}")
@@ -47,7 +53,7 @@ class FCFSScheduler(Scheduler):
     def show_gantt_chart(self):
         fig, gnt = plt.subplots(figsize=(10, 2.5))
 
-        gnt.set_title("FCFS Gantt Chart", fontsize=14)
+        gnt.set_title("SJF Gantt Chart", fontsize=14)
         gnt.set_xlabel("Time")
         gnt.set_yticks([])  # Hide y-axis
         gnt.set_ylim(0, 30)
@@ -62,7 +68,7 @@ class FCFSScheduler(Scheduler):
         current_time = 0
         legend_patches = []
 
-        for i, process in enumerate(self.processes):
+        for i, process in enumerate(self.completed):
             arrival = process["arrival"]
             burst = process["burst"]
             pid = process["id"]
