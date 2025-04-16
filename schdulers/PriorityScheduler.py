@@ -4,8 +4,10 @@ from schdulers.Scheduler import Scheduler
 
 
 class PriorityScheduler(Scheduler):
+
     def __init__(self):
         super().__init__(priority=True)
+        self.response_time = self.waiting_time
 
     def run(self):
         ready = []
@@ -13,11 +15,11 @@ class PriorityScheduler(Scheduler):
 
         while i < self.num_processes or ready:
             while i < self.num_processes and self.processes[i]["arrival"] <= self.current_time:
-                heapq.heappush(ready, (self.processes[i]["priority"], self.processes[i]))
+                heapq.heappush(ready, (self.processes[i]["priority"], i, self.processes[i]))
                 i += 1
 
             if ready:
-                _, process = heapq.heappop(ready)
+                _, _, process = heapq.heappop(ready)
                 process_idx = int(process["id"][1:]) - 1
 
                 waiting_time = self.current_time - process["arrival"]

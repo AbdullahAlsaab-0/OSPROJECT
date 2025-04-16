@@ -7,6 +7,7 @@ class SjfScheduler(Scheduler):
 
     def __init__(self):
         super().__init__()
+        self.response_time = self.waiting_time
 
     def run(self):
         ready = []
@@ -31,4 +32,4 @@ class SjfScheduler(Scheduler):
             else:
                 self.current_time = self.processes[i]["arrival"]
 
-        self.show_stats("SJF")
+        self.show_stats("Non-Preemptive-SJF")

@@ -5,6 +5,7 @@ class FcfsScheduler(Scheduler):
 
     def __init__(self):
         super().__init__()
+        self.response_time = self.waiting_time
 
 
     def run(self):

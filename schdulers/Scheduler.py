@@ -10,6 +10,7 @@ class Scheduler():
         self.processes, self.num_processes = util.read_input_processes(priority, interval)
         self.waiting_time = [0] * self.num_processes
         self.turnaround_time = [0] * self.num_processes
+        self.response_time = [0] * self.num_processes
         self.current_time = 0
         self.completed = []
 
@@ -19,17 +20,30 @@ class Scheduler():
     # def read_processes(self, sort:str, priority:bool=False, interval:bool=False):
     #     self.processes, self.num_processes = util.read_input_processes(sort, priority, interval)
 
-    def show_stats(self, algo):
-        print(f"\n{'Process':<10}{'Arrival':<10}{'Burst':<10}{'Waiting':<10}{'Turnaround':<10}")
-        for process in self.completed:
+    def show_stats(self, name: str):
+        print(f"\n{name} Scheduling\n")
+        print(f"{'Process':<10}{'Arrival':<10}{'Burst':<10}"
+              f"{'Waiting':<10}{'Turnaround':<15}"
+              f"{'Response':<10}")
+
+        for idx, process in enumerate(self.completed):
             process_idx = int(process["id"][1:]) - 1
-            print(
-                f"{process["id"]:<10}{process["arrival"]:<10}{process["burst"]:<10}{self.waiting_time[process_idx]:<10}{self.turnaround_time[process_idx]:<10}")
-        AWT = sum(self.waiting_time) / len(self.waiting_time)
-        ATT = sum(self.turnaround_time) / len(self.turnaround_time)
-        print(f"\nAverage Waiting Time: {AWT:.2f}")
-        print(f"Average Turnaround Time: {ATT:.2f}\n")
-        self.show_gantt_chart(algo)
+            print(f"{process['id']:<10}{process['arrival']:<10}{process['burst']:<10}"
+                  f"{self.waiting_time[process_idx]:<10}{self.turnaround_time[process_idx]:<15}"
+                  f"{self.response_time[process_idx]:<10}")
+
+        avg_waiting = sum(self.waiting_time) / self.num_processes
+        avg_turnaround = sum(self.turnaround_time) / self.num_processes
+        avg_response = (
+            sum(self.response_time) / self.num_processes
+            if hasattr(self, 'response_time') else None
+        )
+
+        print(f"\nAverage Waiting Time: {avg_waiting:.2f}")
+        print(f"Average Turnaround Time: {avg_turnaround:.2f}")
+        if avg_response is not None:
+            print(f"Average Response Time: {avg_response:.2f}\n")
+        self.show_gantt_chart(name)
 
     def show_gantt_chart(self, algo):
         fig, gnt = plt.subplots(figsize=(10, 2.5))
