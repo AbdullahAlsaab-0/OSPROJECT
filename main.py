@@ -4,6 +4,15 @@ from schedulers.RoundRobin import RoundRobin
 from schedulers.SjfPreScheduler import SjfPreScheduler
 from schedulers.SjfScheduler import SjfScheduler
 
+def run_Scheduler(scheduler):
+    try:
+        scheduler.run()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
 def run_scheduler(scheduler_class):
     try:
         scheduler = scheduler_class()
