@@ -17,6 +17,7 @@ def mock_show_gantt_chart(self, algo):
     pass
 
 
+
 original_show_stats = Scheduler.show_stats
 original_show_gantt_chart = Scheduler.show_gantt_chart
 original_read_input = util.read_input_processes
