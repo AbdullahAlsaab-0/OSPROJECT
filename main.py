@@ -4,7 +4,34 @@ from schedulers.RoundRobin import RoundRobin
 from schedulers.SjfPreScheduler import SjfPreScheduler
 from schedulers.SjfScheduler import SjfScheduler
 
+def run_Scheduler(scheduler):
+    try:
+        scheduler.run()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+def run_scheduler(scheduler_class):
+    try:
+        scheduler = scheduler_class()
+        scheduler.run()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
 def run_app():
+    scheduler_map = {
+        "1": FcfsScheduler,
+        "2": SjfScheduler,
+        "3": SjfPreScheduler,
+        "4": PriorityScheduler,
+        "5": RoundRobin
+    }
+    
     while True:
         print("====CPU SCHEDULER====")
         print("Choose an option:\n")
@@ -22,50 +49,13 @@ def run_app():
             break
         print()
 
-        if choice == "1":
-            try:
-                fcfs = FcfsScheduler()
-                fcfs.run()
-            except Exception as e:
-                print(e)
-                continue
-
-        elif choice == "2":
-            try:
-                sjf = SjfScheduler()
-                sjf.run()
-            except Exception as e:
-                print(e)
-                continue
-
-        elif choice == "3":
-            try:
-                sjf_pre = SjfPreScheduler()
-                sjf_pre.run()
-            except Exception as e:
-                print(e)
-                continue
-
-        elif choice == "4":
-            try:
-                priority = PriorityScheduler()
-                priority.run()
-            except Exception as e:
-                print(e)
-                continue
-        elif choice == "5":
-            try:
-                rr = RoundRobin()
-                rr.run()
-            except Exception as e:
-                print(e)
-                continue
+        if choice in scheduler_map:
+            run_scheduler(scheduler_map[choice])
         elif choice == "6":
             print("Exiting...\n")
             break
         else:
             print("Invalid choice. Please try again.\n")
-            continue
 
 
 if __name__ == "__main__":
