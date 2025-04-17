@@ -18,14 +18,14 @@ class SjfScheduler(Scheduler):
                 burst, _, process = heapq.heappop(ready)
                 process_idx = int(process["id"][1:]) - 1
 
-                waiting_time = self.current_time - process["arrival"]
-                turnaround = waiting_time + burst
+                waiting = self.current_time - process["arrival"]
+                turnaround = waiting + burst
 
                 if not self.responded[process_idx]:
                     self.response_time[process_idx] = self.current_time - process["arrival"]
                     self.responded[process_idx] = True
 
-                self.waiting_time[process_idx]= waiting_time
+                self.waiting_time[process_idx]= waiting
                 self.turnaround_time[process_idx] = turnaround
                 self.current_time += burst
                 self.timeline.append({"id": process["id"],

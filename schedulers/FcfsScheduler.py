@@ -12,8 +12,8 @@ class FcfsScheduler(Scheduler):
             if arrival > self.current_time:
                 self.current_time = arrival
 
-            waiting_time = self.current_time - arrival
-            turnaround = waiting_time + burst
+            waiting = self.current_time - arrival
+            turnaround = waiting + burst
 
             process_idx = int(process["id"][1:]) - 1
 
@@ -22,7 +22,7 @@ class FcfsScheduler(Scheduler):
                 self.responded[process_idx] = True
 
             self.turnaround_time[process_idx] = turnaround
-            self.waiting_time[process_idx] = waiting_time
+            self.waiting_time[process_idx] = waiting
             self.current_time += burst
             self.timeline.append({"id": process["id"],
                                   "finish": self.current_time,
