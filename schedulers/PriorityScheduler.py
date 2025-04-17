@@ -7,7 +7,6 @@ class PriorityScheduler(Scheduler):
 
     def __init__(self):
         super().__init__(priority=True)
-        self.response_time = self.waiting_time
 
     def run(self):
         ready = []
@@ -19,7 +18,7 @@ class PriorityScheduler(Scheduler):
                 i += 1
 
             if ready:
-                _, _, process = heapq.heappop(ready)
+                priority, _, process = heapq.heappop(ready)
                 process_idx = int(process["id"][1:]) - 1
 
                 waiting = self.current_time - process["arrival"]
@@ -37,6 +36,10 @@ class PriorityScheduler(Scheduler):
                                       "start": self.current_time - process["burst"]})
                 self.completed.append(process)
             else:
+                self.timeline.append({"id": "idle",
+                                      "finish": self.processes[i]["arrival"],
+                                      "start": self.current_time})
                 self.current_time = self.processes[i]["arrival"]
+
 
         self.show_stats("Priority")

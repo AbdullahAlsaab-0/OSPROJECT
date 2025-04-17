@@ -3,6 +3,7 @@ from schedulers.FcfsScheduler import FcfsScheduler
 from schedulers.SjfScheduler import SjfScheduler
 from schedulers.SjfPreScheduler import SjfPreScheduler
 from schedulers.PriorityScheduler import PriorityScheduler
+from schedulers.RoundRobin import RoundRobin
 from schedulers.Scheduler import Scheduler
 import util
 import traceback
@@ -26,6 +27,7 @@ Scheduler.show_gantt_chart = mock_show_gantt_chart
 
 test_cases = [
     {
+    # Different arrival times
         "processes": [
             {"id": "P1", "arrival": 0, "burst": 5, "priority": 1},
             {"id": "P2", "arrival": 1, "burst": 3, "priority": 2},
@@ -51,11 +53,18 @@ test_cases = [
                 "waiting": [0, 4, 6],
                 "turnaround": [5, 7, 7],
                 "response": [0, 4, 6]
+            },
+            "Round-Robin": {
+                "waiting": [4, 4, 2],
+                "turnaround": [9, 7, 3],
+                "response": [0, 1, 2]
             }
+
         }
     },
 
     {
+    # Same arrival times
         "processes": [
             {"id": "P1", "arrival": 0, "burst": 6, "priority": 3},
             {"id": "P2", "arrival": 0, "burst": 8, "priority": 1},
@@ -81,10 +90,16 @@ test_cases = [
                 "waiting": [15, 0, 8],
                 "turnaround": [21, 8, 15],
                 "response": [15, 0, 8]
+            },
+            "Round-Robin": {
+                "waiting": [8, 12, 14],
+                "turnaround": [14, 20, 21],
+                "response": [0, 2, 4]
             }
         }
     },
 
+    # Idle times
     {
         "processes": [
             {"id": "P1", "arrival": 0, "burst": 2, "priority": 2},
@@ -111,6 +126,11 @@ test_cases = [
                 "waiting": [0, 0, 2],
                 "turnaround": [2, 4, 5],
                 "response": [0, 0, 2]
+            },
+            "Round-Robin": {
+                "waiting": [0, 2, 2],
+                "turnaround": [2, 6, 5],
+                "response": [0, 0, 0]
             }
         }
     }
@@ -122,7 +142,7 @@ mock_processes = None
 
 def mock_read_input_processes(priority=False, interval=False):
     global mock_processes
-    return copy.deepcopy(mock_processes), len(mock_processes)
+    return copy.deepcopy(mock_processes), len(mock_processes), 2  # Set quantum/interval to 2
 
 
 
@@ -173,6 +193,15 @@ def run_tests():
             passed_tests += 1
         except AssertionError as e:
             print(f"❌ Priority Test Failed: {e}")
+        total_tests += 1
+
+        try:
+            rr = RoundRobin()
+            rr.run()
+            verify_results(rr, test_case["expected"]["Round-Robin"], "Round-Robin")
+            passed_tests += 1
+        except AssertionError as e:
+            print(f"❌ Round Robin Test Failed: {e}")
         total_tests += 1
 
     print(f"\n{'=' * 50}")

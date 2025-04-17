@@ -1,7 +1,7 @@
 from typing import Any
 
 
-def read_input_processes(priority:bool=False, interval:bool=False) -> tuple[list[dict], int]:
+def read_input_processes(priority:bool=False, interval:bool=False) -> tuple[list[dict], int, int]:
 
     try:
         num_processes = int(input("How many processes are there? "))
@@ -31,13 +31,16 @@ def read_input_processes(priority:bool=False, interval:bool=False) -> tuple[list
             process["priority"] = priorities[idx]
 
     if interval:
-        intervals = read_int_list("interval", num_processes)
-        for idx, process in enumerate(processes):
-            process["interval"] = intervals[idx]
-
+        try:
+            interval = int(input("Enter the interval for the processes: "))
+            if interval <= 0:
+                raise ValueError()
+        except ValueError:
+            print("Interval can't be zero or negative")
     processes = sorted(processes, key=lambda x: x["arrival"])
 
-    return processes, num_processes
+    return processes, num_processes, interval
+
 
 def validate_times(processes: list[dict]):
     for process in processes:

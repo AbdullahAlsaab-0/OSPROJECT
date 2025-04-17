@@ -7,10 +7,9 @@ import util
 
 class Scheduler():
     def __init__(self, priority=False, interval=False):
-        self.processes, self.num_processes = util.read_input_processes(priority, interval)
+        self.processes, self.num_processes, self.interval = util.read_input_processes(priority, interval)
         self.waiting_time = [0] * self.num_processes
         self.turnaround_time = [0] * self.num_processes
-        self.response_time = [0] * self.num_processes
         self.response_time = [0] * self.num_processes
         self.responded = [False] * self.num_processes
         self.current_time = 0
@@ -19,6 +18,11 @@ class Scheduler():
 
     def __str__(self):
         return f"Number of processes = {self.num_processes}, processes = {self.processes}"
+
+    def get_response_time(self, process_idx, arrival):
+        if not self.responded[process_idx]:
+            self.response_time[process_idx] = self.current_time - arrival
+            self.responded[process_idx] = True
 
     def show_stats(self, name: str):
         print(f"\n{name} Scheduling\n")
@@ -34,15 +38,16 @@ class Scheduler():
 
         avg_waiting = sum(self.waiting_time) / self.num_processes
         avg_turnaround = sum(self.turnaround_time) / self.num_processes
-        avg_response = (
-            sum(self.response_time) / self.num_processes
-            if hasattr(self, 'response_time') else None
-        )
+        avg_response = sum(self.response_time) / self.num_processes
+
+
 
         print(f"\nAverage Waiting Time: {avg_waiting:.2f}")
         print(f"Average Turnaround Time: {avg_turnaround:.2f}")
-        if avg_response is not None:
-            print(f"Average Response Time: {avg_response:.2f}\n")
+        print(f"Average Response Time: {avg_response:.2f}\n")
+        if self.interval:
+            print(f"Number of context switches: {len(self.timeline) - 1}\n")
+
         self.show_gantt_chart(name)
 
     def show_gantt_chart(self, algo):
@@ -71,15 +76,13 @@ class Scheduler():
             start = segment["start"]
             end = segment["finish"]
 
-            # Handle idle time
-            if start > current_time:
-                idle_time = start - current_time
-                gnt.broken_barh([(current_time, idle_time)], (10, 10), facecolors='lightgrey')
-                gnt.text(current_time + idle_time / 2, 15, "IDLE", ha='center', va='center', fontsize=8)
-                gnt.text(current_time, 5, str(current_time), ha='center', fontsize=8)
-                current_time = start
+            # if start > current_time:
+            #     idle_time = start - current_time
+            #     gnt.broken_barh([(current_time, idle_time)], (10, 10), facecolors='lightgrey', edgecolors='black')
+            #     gnt.text(current_time + idle_time / 2, 15, "IDLE", ha='center', va='center', fontsize=8)
+            #     gnt.text(current_time, 5, str(current_time), ha='center', fontsize=8)
+            #     current_time = start
 
-            # Assign a color if it's a new PID
             if id not in colors:
                 colors[id] = available_colors[len(colors) % len(available_colors)]
 
@@ -96,7 +99,6 @@ class Scheduler():
                 legend_patches.append(patches.Patch(color=color, label=id))
                 used_pids.add(id)
 
-        # Final time marker
         gnt.text(current_time, 5, str(current_time), ha='center', fontsize=8)
 
         gnt.legend(handles=legend_patches, bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)

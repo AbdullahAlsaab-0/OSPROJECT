@@ -11,7 +11,7 @@ class SjfScheduler(Scheduler):
 
         while i < self.num_processes or ready:
             while i < self.num_processes and self.processes[i]["arrival"] <= self.current_time:
-                heapq.heappush(ready, (self.processes[i]["burst"],i , self.processes[i]))
+                heapq.heappush(ready,(self.processes[i]["burst"], i, self.processes[i]))
                 i += 1
 
             if ready:
@@ -33,6 +33,9 @@ class SjfScheduler(Scheduler):
                                       "start": self.current_time - burst})
                 self.completed.append(process)
             else:
+                self.timeline.append({"id": "idle",
+                                      "finish": self.processes[i]["arrival"],
+                                      "start": self.current_time})
                 self.current_time = self.processes[i]["arrival"]
 
         self.show_stats("Non-Preemptive-SJF")

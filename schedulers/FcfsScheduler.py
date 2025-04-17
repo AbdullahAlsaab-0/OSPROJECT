@@ -10,7 +10,10 @@ class FcfsScheduler(Scheduler):
             burst = process["burst"]
 
             if arrival > self.current_time:
-                self.current_time = arrival
+                self.timeline.append({"id": "idle",
+                                      "finish": process["arrival"],
+                                      "start": self.current_time})
+                self.current_time = process["arrival"]
 
             waiting = self.current_time - arrival
             turnaround = waiting + burst
