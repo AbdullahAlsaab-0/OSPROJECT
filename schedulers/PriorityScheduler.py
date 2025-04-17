@@ -12,22 +12,24 @@ class PriorityScheduler(Scheduler):
         ready = []
         i = 0
 
+        # Loop through all processes sorted by arrival time
         while i < self.num_processes or ready:
+            # If there are processes that have arrived, add them to the ready queue
             while i < self.num_processes and self.processes[i]["arrival"] <= self.current_time:
                 heapq.heappush(ready, (self.processes[i]["priority"], i, self.processes[i]))
                 i += 1
 
             if ready:
                 priority, _, process = heapq.heappop(ready)
-                process_idx = int(process["id"][1:]) - 1
+                process_idx = int(process["id"][1:]) - 1 # Extract process index from ID (e.g. P1 -> 0)
 
+                # Calculate waiting and turnaround times for the current process
                 waiting = self.current_time - process["arrival"]
                 turnaround = waiting + process["burst"]
 
-                if not self.responded[process_idx]:
-                    self.response_time[process_idx] = self.current_time - process["arrival"]
-                    self.responded[process_idx] = True
+                self.get_response_time(process_idx, process["arrival"])
 
+                # Update scheduler state and store timeline information for visualization
                 self.waiting_time[process_idx] = waiting
                 self.turnaround_time[process_idx] = turnaround
                 self.current_time += process["burst"]
@@ -36,10 +38,7 @@ class PriorityScheduler(Scheduler):
                                       "start": self.current_time - process["burst"]})
                 self.completed.append(process)
             else:
-                self.timeline.append({"id": "idle",
-                                      "finish": self.processes[i]["arrival"],
-                                      "start": self.current_time})
-                self.current_time = self.processes[i]["arrival"]
+                self.handle_idle_time(i)
 
 
         self.show_stats("Priority")
