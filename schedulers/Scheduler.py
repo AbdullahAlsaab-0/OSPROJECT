@@ -11,8 +11,11 @@ class Scheduler():
         self.waiting_time = [0] * self.num_processes
         self.turnaround_time = [0] * self.num_processes
         self.response_time = [0] * self.num_processes
+        self.response_time = [0] * self.num_processes
+        self.responded = [False] * self.num_processes
         self.current_time = 0
         self.completed = []
+        self.timeline = []
 
     def __str__(self):
         return f"Number of processes = {self.num_processes}, processes = {self.processes}"
@@ -50,40 +53,53 @@ class Scheduler():
 
         gnt.set_title(f"{algo} Gantt Chart", fontsize=14)
         gnt.set_xlabel("Time")
-        gnt.set_yticks([])  # Hide y-axis
+        gnt.set_yticks([])
         gnt.set_ylim(0, 30)
         gnt.set_xlim(0, self.current_time + 2)
 
-        colors = [
+        colors = {}
+        available_colors = [
             "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
             "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab"
         ]
-        random.shuffle(colors)
+        random.shuffle(available_colors)
+
+        legend_patches = []
+        used_pids = set()
 
         current_time = 0
-        legend_patches = []
 
-        for i, process in enumerate(self.completed):
-            arrival = process["arrival"]
-            burst = process["burst"]
-            pid = process["id"]
-            color = colors[i % len(colors)]
+        for segment in self.timeline:
+            id = segment["id"]
+            start = segment["start"]
+            end = segment["finish"]
 
-            if arrival > current_time:
-                idle_time = arrival - current_time
+            # Handle idle time
+            if start > current_time:
+                idle_time = start - current_time
                 gnt.broken_barh([(current_time, idle_time)], (10, 10), facecolors='lightgrey')
                 gnt.text(current_time + idle_time / 2, 15, "IDLE", ha='center', va='center', fontsize=8)
+                gnt.text(current_time, 5, str(current_time), ha='center', fontsize=8)
+                current_time = start
 
-                current_time = arrival
+            # Assign a color if it's a new PID
+            if id not in colors:
+                colors[id] = available_colors[len(colors) % len(available_colors)]
 
-            gnt.broken_barh([(current_time, burst)], (10, 10), facecolors=color, edgecolors='black')
-            gnt.text(current_time + burst / 2, 15, pid, ha='center', va='center', color='white', fontsize=9)
+            color = colors[id]
+            duration = end - start
 
-            gnt.text(current_time, 5, str(current_time), ha='center', fontsize=8)
-            current_time += burst
+            gnt.broken_barh([(start, duration)], (10, 10), facecolors=color, edgecolors='black')
+            gnt.text(start + duration / 2, 15, id, ha='center', va='center', color='white', fontsize=9)
+            gnt.text(start, 5, str(start), ha='center', fontsize=8)
 
-            legend_patches.append(patches.Patch(color=color, label=pid))
+            current_time = end
 
+            if id not in used_pids:
+                legend_patches.append(patches.Patch(color=color, label=id))
+                used_pids.add(id)
+
+        # Final time marker
         gnt.text(current_time, 5, str(current_time), ha='center', fontsize=8)
 
         gnt.legend(handles=legend_patches, bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)

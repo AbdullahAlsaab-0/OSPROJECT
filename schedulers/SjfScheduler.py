@@ -1,13 +1,9 @@
 import heapq
 
-from schdulers.Scheduler import Scheduler
+from schedulers.Scheduler import Scheduler
 
 
 class SjfScheduler(Scheduler):
-
-    def __init__(self):
-        super().__init__()
-        self.response_time = self.waiting_time
 
     def run(self):
         ready = []
@@ -25,9 +21,16 @@ class SjfScheduler(Scheduler):
                 waiting_time = self.current_time - process["arrival"]
                 turnaround = waiting_time + burst
 
+                if not self.responded[process_idx]:
+                    self.response_time[process_idx] = self.current_time - process["arrival"]
+                    self.responded[process_idx] = True
+
                 self.waiting_time[process_idx]= waiting_time
                 self.turnaround_time[process_idx] = turnaround
                 self.current_time += burst
+                self.timeline.append({"id": process["id"],
+                                      "finish": self.current_time,
+                                      "start": self.current_time - burst})
                 self.completed.append(process)
             else:
                 self.current_time = self.processes[i]["arrival"]

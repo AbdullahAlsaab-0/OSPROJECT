@@ -1,7 +1,7 @@
-from schdulers.FcfsScheduler import FcfsScheduler
-from schdulers.PriorityScheduler import PriorityScheduler
-from schdulers.SfjPreScheduler import SfjPreScheduler
-from schdulers.SjfScheduler import SjfScheduler
+from schedulers.FcfsScheduler import FcfsScheduler
+from schedulers.PriorityScheduler import PriorityScheduler
+from schedulers.SjfPreScheduler import SjfPreScheduler
+from schedulers.SjfScheduler import SjfScheduler
 
 while True:
     print("====CPU SCHEDULER====")
@@ -11,7 +11,11 @@ while True:
     print("3. Preemptive-SJF Scheduler")
     print("4. Priority Scheduler")
 
-    choice = input("Your choice is: ")
+    try:
+        choice = input("Your choice is: ")
+    except KeyboardInterrupt:
+        print("Exiting...\n")
+        break
     print()
 
     if choice == "1":
@@ -32,7 +36,7 @@ while True:
 
     elif choice == "3":
         try:
-            sjf_pre = SfjPreScheduler()
+            sjf_pre = SjfPreScheduler()
             sjf_pre.run()
         except Exception as e:
             print(e)

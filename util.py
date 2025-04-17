@@ -5,7 +5,7 @@ def read_input_processes(priority:bool=False, interval:bool=False) -> tuple[list
 
     try:
         num_processes = int(input("How many processes are there? "))
-        if num_processes < 0:
+        if num_processes <= 0:
             raise ValueError()
     except ValueError:
         raise ValueError("Please enter a positive integer.\n")
