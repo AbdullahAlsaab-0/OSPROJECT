@@ -113,7 +113,7 @@ class Scheduler:
             duration = end - start
 
             gnt.broken_barh([(start, duration)], (10, 10), facecolors=color, edgecolors='black')
-            gnt.text(start + duration / 2, 15, id, ha='center', va='center', color='white', fontsize=9)
+            gnt.text(start + duration / 2, 15, id, ha='center', va='center', color='white', fontsize=9, weight='bold')
             gnt.text(start, 5, str(start), ha='center', fontsize=8)
 
             current_time = end
