@@ -3,7 +3,7 @@ from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
 from matplotlib import pyplot as plt, patches
-
+from rich.align import Align
 import util
 
 console = Console()
@@ -35,16 +35,15 @@ class Scheduler:
         self.current_time = self.processes[i]["arrival"]
 
     def show_stats(self, name: str):
-        console.rule(f"[bold blue]{name} Scheduling Stats")
+        console.rule(f"[bold blue]📈 {name} Scheduling Stats")
 
-        # Create the table
-        table = Table(show_header=True, header_style="bold magenta")
-        table.add_column("Process", style="cyan")
-        table.add_column("Arrival", justify="right")
-        table.add_column("Burst", justify="right")
-        table.add_column("Waiting", justify="right")
-        table.add_column("Turnaround", justify="right")
-        table.add_column("Response", justify="right")
+        table = Table(show_header=True, header_style="bold magenta", border_style="dim")
+        table.add_column("📛 Process", style="cyan", justify="center")
+        table.add_column("🕓 Arrival", justify="right")
+        table.add_column("⚙️ Burst", justify="right")
+        table.add_column("⌛ Waiting", justify="right")
+        table.add_column("🔁 Turnaround", justify="right")
+        table.add_column("📥 Response", justify="right")
 
         for idx, process in enumerate(self.completed):
             i = int(process["id"][1:]) - 1
@@ -57,26 +56,34 @@ class Scheduler:
                 str(self.response_time[i]),
             )
 
-        console.print(table)
+        # Center the table
+        console.print(Align.center(table))
 
-        # Show averages
         avg_waiting = sum(self.waiting_time) / self.num_processes
         avg_turnaround = sum(self.turnaround_time) / self.num_processes
         avg_response = sum(self.response_time) / self.num_processes
 
-        console.print(
-            Panel.fit(
-                f"📊 [bold]Averages:[/bold]\n\n"
-                f"⏳ Waiting Time: [green]{avg_waiting:.2f}[/]\n"
-                f"🔁 Turnaround Time: [green]{avg_turnaround:.2f}[/]\n"
-                f"📥 Response Time: [green]{avg_response:.2f}[/]",
-                title="Summary",
-                border_style="blue"
-            )
+        summary_text = (
+            f"📊 [bold]Averages[/bold]\n\n"
+            f"⏳ [cyan]Waiting Time:[/] [green]{avg_waiting:.2f}[/]\n"
+            f"🔁 [cyan]Turnaround Time:[/] [green]{avg_turnaround:.2f}[/]\n"
+            f"📥 [cyan]Response Time:[/] [green]{avg_response:.2f}[/]"
         )
 
+        panel = Panel.fit(
+            summary_text,
+            title="📌 Summary",
+            title_align="left",
+            border_style="bright_blue",
+            padding=(1, 4)
+        )
+
+        # Center the panel
+        console.print(Align.center(panel))
+
         if self.quantum:
-            console.print(f"\n🌀 [bold yellow]Number of context switches:[/] {len(self.timeline) - 1}")
+            context_msg = f"\n[bold yellow]🔄 Context Switches:[/] [bright_white]{len(self.timeline) - 1}[/]"
+            console.print(Align.center(context_msg))
 
         self.show_gantt_chart(name)
 

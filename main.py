@@ -7,6 +7,8 @@ from rich.console import Console
 from rich.prompt import Prompt
 from rich.panel import Panel
 from rich.text import Text
+from rich.align import Align
+from rich import box
 
 console = Console()
 
@@ -34,14 +36,15 @@ def run_app():
         console.rule("[bold blue]⚙️ CPU SCHEDULER")
 
         menu_text = """
-[cyan]1.[/] FCFS Scheduler
-[cyan]2.[/] Non-Preemptive SJF Scheduler
-[cyan]3.[/] Preemptive SJF Scheduler
-[cyan]4.[/] Priority Scheduler
-[cyan]5.[/] Round-Robin Scheduler
+[cyan]1.[/] FCFS Scheduler  
+[cyan]2.[/] Non-Preemptive SJF Scheduler  
+[cyan]3.[/] Preemptive SJF Scheduler  
+[cyan]4.[/] Priority Scheduler  
+[cyan]5.[/] Round-Robin Scheduler  
 [cyan]6.[/] Exit
 """
-        console.print(Panel(menu_text, title="Main Menu", border_style="green"))
+        menu_panel = Panel(menu_text, title="Main Menu", border_style="green", padding=(1, 4))
+        console.print(Align.center(menu_panel))  # Centering the menu panel
 
         try:
             choice = Prompt.ask("[green]🔎 Your choice[/]")
