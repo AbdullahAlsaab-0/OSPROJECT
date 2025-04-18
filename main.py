@@ -1,8 +1,8 @@
 from schedulers.FcfsScheduler import FcfsScheduler
 from schedulers.PriorityScheduler import PriorityScheduler
 from schedulers.RoundRobin import RoundRobin
-from schedulers.SjfPreScheduler import SjfPreScheduler
-from schedulers.SjfScheduler import SjfScheduler
+from schedulers.Preemptive_SJFScheduler import Preemptive_SJFScheduler
+from schedulers.Non_Preemptive_SJFScheduler import Non_Preemptive_SJFScheduler
 
 def run_Scheduler(scheduler):
     try:
@@ -26,8 +26,8 @@ def run_scheduler(scheduler_class):
 def run_app():
     scheduler_map = {
         "1": FcfsScheduler,
-        "2": SjfScheduler,
-        "3": SjfPreScheduler,
+        "2": Non_Preemptive_SJFScheduler,
+        "3": Preemptive_SJFScheduler,
         "4": PriorityScheduler,
         "5": RoundRobin
     }

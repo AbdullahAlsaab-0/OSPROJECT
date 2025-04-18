@@ -1,7 +1,7 @@
 import copy
 from schedulers.FcfsScheduler import FcfsScheduler
-from schedulers.SjfScheduler import SjfScheduler
-from schedulers.SjfPreScheduler import SjfPreScheduler
+from schedulers.Non_Preemptive_SJFScheduler import Non_Preemptive_SJFScheduler
+from schedulers.Preemptive_SJFScheduler import Preemptive_SJFScheduler
 from schedulers.PriorityScheduler import PriorityScheduler
 from schedulers.RoundRobin import RoundRobin
 from schedulers.Scheduler import Scheduler
@@ -170,7 +170,7 @@ def run_tests():
         total_tests += 1
 
         try:
-            sjf = SjfScheduler()
+            sjf = Non_Preemptive_SJFScheduler()
             sjf.run()
             verify_results(sjf, test_case["expected"]["SJF"], "SJF")
             passed_tests += 1
@@ -179,7 +179,7 @@ def run_tests():
         total_tests += 1
 
         try:
-            sjf_pre = SjfPreScheduler()
+            sjf_pre = Preemptive_SJFScheduler()
             sjf_pre.run()
             verify_results(sjf_pre, test_case["expected"]["SJF-Pre"], "SJF-Pre")
             passed_tests += 1
