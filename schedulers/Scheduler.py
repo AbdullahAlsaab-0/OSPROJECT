@@ -45,7 +45,7 @@ class Scheduler:
         table.add_column("🔁 Turnaround", justify="right")
         table.add_column("📥 Response", justify="right")
 
-        for idx, process in enumerate(self.completed):
+        for idx, process in enumerate(self.processes):
             i = int(process["id"][1:]) - 1
             table.add_row(
                 process["id"],
