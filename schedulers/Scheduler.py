@@ -1,9 +1,12 @@
 import random
-
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
 from matplotlib import pyplot as plt, patches
 
 import util
 
+console = Console()
 
 class Scheduler:
 
@@ -32,31 +35,48 @@ class Scheduler:
         self.current_time = self.processes[i]["arrival"]
 
     def show_stats(self, name: str):
-        print(f"\n{name} Scheduling\n")
-        print(f"{'Process':<10}{'Arrival':<10}{'Burst':<10}"
-              f"{'Waiting':<10}{'Turnaround':<15}"
-              f"{'Response':<10}")
+        console.rule(f"[bold blue]{name} Scheduling Stats")
 
-        # Print waiting, turnaround, and response times for completed processes
+        # Create the table
+        table = Table(show_header=True, header_style="bold magenta")
+        table.add_column("Process", style="cyan")
+        table.add_column("Arrival", justify="right")
+        table.add_column("Burst", justify="right")
+        table.add_column("Waiting", justify="right")
+        table.add_column("Turnaround", justify="right")
+        table.add_column("Response", justify="right")
+
         for idx, process in enumerate(self.completed):
-            process_idx = int(process["id"][1:]) - 1
-            print(f"{process['id']:<10}{process['arrival']:<10}{process['burst']:<10}"
-                  f"{self.waiting_time[process_idx]:<10}{self.turnaround_time[process_idx]:<15}"
-                  f"{self.response_time[process_idx]:<10}")
+            i = int(process["id"][1:]) - 1
+            table.add_row(
+                process["id"],
+                str(process["arrival"]),
+                str(process["burst"]),
+                str(self.waiting_time[i]),
+                str(self.turnaround_time[i]),
+                str(self.response_time[i]),
+            )
 
-        # Calculate average waiting, turnaround, and response times for all processes
+        console.print(table)
+
+        # Show averages
         avg_waiting = sum(self.waiting_time) / self.num_processes
         avg_turnaround = sum(self.turnaround_time) / self.num_processes
         avg_response = sum(self.response_time) / self.num_processes
 
+        console.print(
+            Panel.fit(
+                f"📊 [bold]Averages:[/bold]\n\n"
+                f"⏳ Waiting Time: [green]{avg_waiting:.2f}[/]\n"
+                f"🔁 Turnaround Time: [green]{avg_turnaround:.2f}[/]\n"
+                f"📥 Response Time: [green]{avg_response:.2f}[/]",
+                title="Summary",
+                border_style="blue"
+            )
+        )
 
-
-        print(f"\nAverage Waiting Time: {avg_waiting:.2f}")
-        print(f"Average Turnaround Time: {avg_turnaround:.2f}")
-        print(f"Average Response Time: {avg_response:.2f}\n")
-        # If Round-Robin is chosen, calculate and print the number of context switches
         if self.quantum:
-            print(f"Number of context switches: {len(self.timeline) - 1}\n")
+            console.print(f"\n🌀 [bold yellow]Number of context switches:[/] {len(self.timeline) - 1}")
 
         self.show_gantt_chart(name)
 
