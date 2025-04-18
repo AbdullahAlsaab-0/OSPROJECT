@@ -1,6 +1,5 @@
 from rich.console import Console
 from rich.prompt import Prompt, IntPrompt
-from rich.text import Text
 from typing import List, Dict, Tuple
 
 console = Console()
@@ -65,7 +64,7 @@ def validate_times(processes: list[dict]):
             raise ValueError("Arrival times must be non-negative and burst times must be positive\n")
 
 
-def read_int_list(name: str, count: int) -> list[int]:
+def read_int_list(name: str, count: int) -> list[int] | None:
     while True:
         raw_input = Prompt.ask(f"Enter the [bold]{name}[/] values separated by spaces").split()
         if len(raw_input) != count:

@@ -6,9 +6,7 @@ from schedulers.SjfScheduler import SjfScheduler
 from rich.console import Console
 from rich.prompt import Prompt
 from rich.panel import Panel
-from rich.text import Text
 from rich.align import Align
-from rich import box
 
 console = Console()
 
