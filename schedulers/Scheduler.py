@@ -37,21 +37,22 @@ class Scheduler:
               f"{'Waiting':<10}{'Turnaround':<15}"
               f"{'Response':<10}")
 
+        # Print waiting, turnaround, and response times for completed processes
         for idx, process in enumerate(self.completed):
             process_idx = int(process["id"][1:]) - 1
             print(f"{process['id']:<10}{process['arrival']:<10}{process['burst']:<10}"
                   f"{self.waiting_time[process_idx]:<10}{self.turnaround_time[process_idx]:<15}"
                   f"{self.response_time[process_idx]:<10}")
 
+        # Calculate average waiting, turnaround, and response times for all processes
         avg_waiting = sum(self.waiting_time) / self.num_processes
         avg_turnaround = sum(self.turnaround_time) / self.num_processes
         avg_response = sum(self.response_time) / self.num_processes
 
-
-
         print(f"\nAverage Waiting Time: {avg_waiting:.2f}")
         print(f"Average Turnaround Time: {avg_turnaround:.2f}")
         print(f"Average Response Time: {avg_response:.2f}\n")
+        # If Round-Robin is chosen, calculate and print the number of context switches
         if self.quantum:
             print(f"Number of context switches: {len(self.timeline) - 1}\n")
 
