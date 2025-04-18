@@ -49,6 +49,8 @@ class Scheduler:
         avg_turnaround = sum(self.turnaround_time) / self.num_processes
         avg_response = sum(self.response_time) / self.num_processes
 
+
+
         print(f"\nAverage Waiting Time: {avg_waiting:.2f}")
         print(f"Average Turnaround Time: {avg_turnaround:.2f}")
         print(f"Average Response Time: {avg_response:.2f}\n")
