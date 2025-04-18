@@ -1,9 +1,9 @@
-from schedulers.Scheduler import Scheduler
-import heapq
-import copy
+    from schedulers.Scheduler import Scheduler
+    import heapq
+    import copy
 
 
-class SjfPreScheduler(Scheduler):
+    class SjfPreScheduler(Scheduler):
 
         def run(self):
             processes_copy = copy.deepcopy(self.processes)
