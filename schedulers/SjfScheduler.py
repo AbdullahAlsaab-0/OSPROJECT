@@ -1,40 +1,58 @@
-import heapq
-
 from schedulers.Scheduler import Scheduler
-
 
 class SjfScheduler(Scheduler):
 
     def run(self):
-        ready = []
-        i = 0
+        self.current_time = 0  # Reset current time to 0
+        remaining = self.processes.copy()  # Copy original list to modify
 
-        # Loop through all processes sorted by arrival time
-        while i < self.num_processes or ready:
-            # If there are processes that have arrived, add them to the ready queue
-            while i < self.num_processes and self.processes[i]["arrival"] <= self.current_time:
-                heapq.heappush(ready,(self.processes[i]["burst"], i, self.processes[i]))
-                i += 1
+        while remaining:
+            available = []
 
-            if ready:
-                burst, _, process = heapq.heappop(ready)
-                process_idx = int(process["id"][1:]) - 1
+            # Gather processes that have arrived
+            for p in remaining:
+                if p["arrival"] <= self.current_time:
+                    available.append(p)
 
-                # Calculate waiting and turnaround times for the current process
-                waiting = self.current_time - process["arrival"]
-                turnaround = waiting + burst
+            # If no process is ready, CPU is idle
+            if not available:
+                # Find the next process arrival time
+                next_arrival = min(p["arrival"] for p in remaining)
+                self.timeline.append({
+                    "id": "idle",
+                    "start": self.current_time,
+                    "finish": next_arrival
+                })
+                self.current_time = next_arrival
+                continue
 
-                self.get_response_time(process_idx, process["arrival"])
+            # Sort available processes by burst time (and arrival time as tiebreaker)
+            available.sort(key=lambda x: (x["burst"], x["arrival"]))
+            process = available[0]
+            process_idx = int(process["id"][1:]) - 1
 
-                # Update scheduler state and store timeline information for visualization
-                self.waiting_time[process_idx]= waiting
-                self.turnaround_time[process_idx] = turnaround
-                self.current_time += burst
-                self.timeline.append({"id": process["id"],
-                                      "finish": self.current_time,
-                                      "start": self.current_time - burst})
-                self.completed.append(process)
-            else:
-                self.handle_idle_time(i)
+            # Set response time (only if it's the first time the process is picked)
+            self.get_response_time(process_idx, process["arrival"])
 
+            # Simulate execution
+            start = self.current_time
+            self.current_time += process["burst"]
+            finish = self.current_time
+
+            # Update Gantt chart timeline
+            self.timeline.append({
+                "id": process["id"],
+                "start": start,
+                "finish": finish
+            })
+
+            # Calculate turnaround and waiting time
+            self.turnaround_time[process_idx] = finish - process["arrival"]
+            self.waiting_time[process_idx] = self.turnaround_time[process_idx] - process["burst"]
+
+            # Mark as completed and remove from remaining list
+            self.completed.append(process)
+            remaining.remove(process)
+
+        # Show final stats
         self.show_stats("Non-Preemptive-SJF")
