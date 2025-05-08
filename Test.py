@@ -1,5 +1,1 @@
-print("BDR 8RD")
-print("BDR 8RD")
-print("BDR 8RD")
-print("BDR 8RD")
-print("BDR 8RD")
+print("I hope this semester ends well.")
