@@ -51,8 +51,9 @@ class RoundRobin(Scheduler):
                 self.handle_idle_time(i)
 
         # Calculate waiting times for each process
+        self.completed.sort(key=lambda x: x["id"])
         for idx, process in enumerate(self.processes):
-            self.waiting_time[idx] = self.turnaround_time[idx] - self.processes[idx]["burst"]
+            self.waiting_time[idx] = self.turnaround_time[idx] - self.completed[idx]["burst"]
         self.show_stats("Round-Robin")
 
 

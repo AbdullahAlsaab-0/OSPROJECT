@@ -51,13 +51,14 @@ class SjfPreScheduler(Scheduler):
 
                     current_process_id = None
                 else:
-                    # If the current process hasn't finished, add it back to the ready queue'
-                    heapq.heappush(ready, (process["burst"], id, processes_copy[process_idx]))
+                    # If the current process hasn't finished, add it back to the ready queue.
+                    heapq.heappush(ready, (processes_copy[process_idx]["burst"], id, process))
             else:
                 self.handle_idle_time(i)
 
         # Calculate waiting times for each process
+        self.completed.sort(key=lambda x: x["id"])
         for idx, process in enumerate(self.processes):
-            self.waiting_time[idx] = self.turnaround_time[idx] - self.processes[idx]["burst"]
+            self.waiting_time[idx] = self.turnaround_time[idx] - self.completed[idx]["burst"]
 
         self.show_stats("Preemptive-SJF")
