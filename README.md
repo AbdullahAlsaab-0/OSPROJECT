@@ -28,3 +28,10 @@ Each algorithm calculates important metrics like waiting time, turnaround time, 
 - Idle time visualization when CPU is not processing
 - Context switch counting for Round Robin scheduling
 - Comprehensive test suite to verify algorithm implementations:
+
+## Contributors
+
+# Anas almehmadi
+# mohammed alhaig
+# bader alyasi
+# abdullah alsaab
